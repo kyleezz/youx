@@ -2,14 +2,25 @@ import './App.css';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchUniversities, deleteLast, addFirstToLast } from './redux/universitiesSlice';
 import { Container, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, CircularProgress } from '@mui/material';
+import { SnackbarProvider, useSnackbar } from 'notistack';
 
 function App() {
   const dispatch = useDispatch();
   const universities = useSelector((state) => state.universities.universities);
   const status = useSelector((state) => state.universities.status);
   const error = useSelector((state) => state.universities.error);
+  const { enqueueSnackbar } = useSnackbar();
 
   console.log(universities)
+
+  const handleAdd = () => {
+    if (universities.length > 0) {
+      dispatch(addFirstToLast());
+    } else {
+      enqueueSnackbar('Cannot add university. The list is empty.', { variant: 'error' });
+    }
+  };
+
   return (
     <Container>
       <h1>University List</h1>
@@ -20,11 +31,13 @@ function App() {
         <Button variant="contained" onClick={() => dispatch(deleteLast())}>
           DELETE
         </Button>
-        <Button variant="contained" onClick={() => dispatch(addFirstToLast())}>
+        <Button variant="contained" onClick={handleAdd}>
           ADD
         </Button>
       </div>
-      <TableContainer>
+      {status === 'loading' && <CircularProgress />}
+      {status === 'failed' && <p>{error}</p>}
+      {status === 'succeeded' && (<TableContainer>
         <Table>
           <TableHead>
             <TableRow>
@@ -42,19 +55,36 @@ function App() {
                 <TableCell>{university.country}</TableCell>
                 <TableCell>{university["state-province"]}</TableCell>
                 <TableCell>
-                  <a href={university.web_pages[0]}>
-                    {university.web_pages[0]}
-                  </a>
+                {university.web_pages.map((webpage, index) => (
+                  <>
+                    <a href={webpage} target="_blank" rel="noopener noreferrer">
+                    {webpage}
+                    </a>
+                    <br></br>
+                  </>
+                ))}
                 </TableCell>
-                <TableCell>{university.domains[0]}</TableCell>
-              </TableRow>
+                <TableCell>{university.domains.map((webpage, _) => (
+                  <>
+                    {webpage}
+                    <br></br>
+                  </>
+                ))}</TableCell>
+                </TableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
+    )}
       
     </Container>
   );
 }
 
-export default App;
+const AppWrapper = () => (
+  <SnackbarProvider maxSnack={3}>
+    <App />
+  </SnackbarProvider>
+);
+
+export default AppWrapper;

@@ -28,10 +28,17 @@ const universitiesSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(fetchUniversities.pending, (state) => {
+        state.status = 'loading';
+      })
       .addCase(fetchUniversities.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.universities = action.payload;
       })
+      .addCase(fetchUniversities.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.error.message;
+      });
   },
 });
 

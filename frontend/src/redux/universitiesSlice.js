@@ -8,7 +8,7 @@ const initialState = {
 export const fetchUniversities = createAsyncThunk(
   'universities/fetchUniversities',
   async () => {
-    const response = await fetch('http://universities.hipolabs.com/search?country=Australia');
+    const response = await fetch('http://localhost:5050/api/universities');
     return await response.json();
   }
 );

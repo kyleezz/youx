@@ -1,10 +1,12 @@
 const mongoose = require('mongoose');
 
 const UniversitySchema = new mongoose.Schema({
+    alpha_two_code: String,
     name: String,
-    country: String,
+    domains: [String],
     web_pages: [String],
-    domains: [String]
+    country: String,
+    "state-province": String,
 });
 
-module.exports = mongoose.model('University', UniversitySchema);
+module.exports = mongoose.model('universities', UniversitySchema);
